@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WorkoutPlannerMVC.Migrations
 {
     /// <inheritdoc />
+    /// 
     public partial class InitCreate : Migration
     {
         /// <inheritdoc />
