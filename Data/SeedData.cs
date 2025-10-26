@@ -3,6 +3,9 @@ using WorkoutPlannerMVC.Models;
 
 namespace WorkoutPlannerMVC.Data
 {
+
+    //Seeds the database
+
     public class SeedData
     {
         public static void Initialize(WorkoutPlannerMVCContext context)

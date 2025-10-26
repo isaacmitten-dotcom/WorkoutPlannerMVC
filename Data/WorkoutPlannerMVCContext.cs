@@ -7,6 +7,8 @@ using WorkoutPlannerMVC.Models;
 
 namespace WorkoutPlannerMVC.Data
 {
+    //This is the context
+
     public class WorkoutPlannerMVCContext : DbContext
     {
         public WorkoutPlannerMVCContext(DbContextOptions<WorkoutPlannerMVCContext> options)

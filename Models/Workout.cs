@@ -1,5 +1,8 @@
 ﻿namespace WorkoutPlannerMVC.Models
 {
+
+    //Model for the Workout entity
+
     public class Workout
     {
         public int Id { get; set; }
