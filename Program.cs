@@ -2,9 +2,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using WorkoutPlannerMVC.Data;
+using WorkoutPlannerMVC.Services;
+
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<WorkoutPlannerMVCContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("WorkoutPlannerMVCContext") ?? throw new InvalidOperationException("Connection string 'WorkoutPlannerMVCContext' not found.")));
+
+
+builder.Services.AddSingleton<IWorkoutRepCounterService, WorkoutRepCounterService>();
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
