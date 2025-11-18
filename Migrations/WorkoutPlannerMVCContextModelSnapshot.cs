@@ -22,6 +22,21 @@ namespace WorkoutPlannerMVC.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ExerciseWorkout", b =>
+                {
+                    b.Property<int>("ExercisesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorkoutsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ExercisesId", "WorkoutsId");
+
+                    b.HasIndex("WorkoutsId");
+
+                    b.ToTable("ExerciseWorkout");
+                });
+
             modelBuilder.Entity("WorkoutPlannerMVC.Models.Exercise", b =>
                 {
                     b.Property<int>("Id")
@@ -45,14 +60,9 @@ namespace WorkoutPlannerMVC.Migrations
                     b.Property<int>("Weight")
                         .HasColumnType("int");
 
-                    b.Property<int>("WorkoutId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("WorkoutId");
-
-                    b.ToTable("Exercise");
+                    b.ToTable("Exercises");
                 });
 
             modelBuilder.Entity("WorkoutPlannerMVC.Models.Workout", b =>
@@ -74,23 +84,22 @@ namespace WorkoutPlannerMVC.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Workout");
+                    b.ToTable("Workouts");
                 });
 
-            modelBuilder.Entity("WorkoutPlannerMVC.Models.Exercise", b =>
+            modelBuilder.Entity("ExerciseWorkout", b =>
                 {
-                    b.HasOne("WorkoutPlannerMVC.Models.Workout", "Workout")
-                        .WithMany("Exercises")
-                        .HasForeignKey("WorkoutId")
+                    b.HasOne("WorkoutPlannerMVC.Models.Exercise", null)
+                        .WithMany()
+                        .HasForeignKey("ExercisesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Workout");
-                });
-
-            modelBuilder.Entity("WorkoutPlannerMVC.Models.Workout", b =>
-                {
-                    b.Navigation("Exercises");
+                    b.HasOne("WorkoutPlannerMVC.Models.Workout", null)
+                        .WithMany()
+                        .HasForeignKey("WorkoutsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

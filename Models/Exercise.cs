@@ -16,9 +16,7 @@
 
         public int Weight { get; set; }
 
-    
-        //Foriegn key
-        public int WorkoutId { get; set; }
-        public Workout Workout { get; set; }
+
+        public ICollection<Workout> Workouts { get; set; } = new List<Workout>();
     }
 }

@@ -13,7 +13,7 @@
 
         public DateTime? StartDate { get; set; }
 
-        public List<Exercise>? Exercises { get; set; }
+        public ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
 
 
     }

@@ -51,3 +51,4 @@ namespace WorkoutPlannerMVC.Services
             await _context.SaveChangesAsync();
         }
     }
+}

@@ -91,7 +91,7 @@ namespace WorkoutPlannerMVC.Controllers
 
             if (ModelState.IsValid)
             {
-                _workoutService.AddAsync(workout);
+               await  _workoutService.AddAsync(workout);
                 return RedirectToAction(nameof(Index));
             }
             return View(workout);

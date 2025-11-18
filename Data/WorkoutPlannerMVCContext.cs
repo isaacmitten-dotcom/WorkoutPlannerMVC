@@ -20,15 +20,13 @@ namespace WorkoutPlannerMVC.Data
 
         public DbSet<WorkoutPlannerMVC.Models.Exercise> Exercises { get; set; } = default!;
 
-    
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Workout>()
                 .HasMany(w => w.Exercises)
-                .WithOne(e => e.Workout)
-                .HasForeignKey(e => e.WorkoutId);
+                .WithMany(e => e.Workouts);
         }
-        public DbSet<WorkoutPlannerMVC.Models.Exercise> Exercise { get; set; } = default!;
     } 
 }
