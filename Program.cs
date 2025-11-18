@@ -10,11 +10,12 @@ builder.Services.AddDbContext<WorkoutPlannerMVCContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("WorkoutPlannerMVCContext") ?? throw new InvalidOperationException("Connection string 'WorkoutPlannerMVCContext' not found.")));
 
 
-builder.Services.AddSingleton<IWorkoutRepCounterService, WorkoutRepCounterService>();
 
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<IWorkoutRepCounterService, WorkoutRepCounterService>();
+builder.Services.AddScoped<IWorkoutService, WorkoutService>();
 
 var app = builder.Build();
 

@@ -2,7 +2,7 @@
 {
     public class Exercise
     {
-        //Model for teh Exercise entity
+        //Model for the Exercise entity
 
         public int Id { get; set; }
 

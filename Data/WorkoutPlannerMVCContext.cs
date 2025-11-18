@@ -18,7 +18,7 @@ namespace WorkoutPlannerMVC.Data
 
         public DbSet<WorkoutPlannerMVC.Models.Workout> Workouts { get; set; } = default!;
 
-        public DbSet<WorkoutPlannerMVC.Models.Workout> Exercises { get; set; } = default!;
+        public DbSet<WorkoutPlannerMVC.Models.Exercise> Exercises { get; set; } = default!;
 
     
 
