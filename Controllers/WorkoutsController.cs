@@ -7,63 +7,63 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WorkoutPlannerMVC.Data;
 using WorkoutPlannerMVC.Models;
+using WorkoutPlannerMVC.Models.ViewModels;
 using WorkoutPlannerMVC.Services;
 
 namespace WorkoutPlannerMVC.Controllers
 {
     public class WorkoutsController : Controller
     {
-      //  private readonly WorkoutPlannerMVCContext _context;
         private readonly ILogger<WorkoutsController> _logger;
         private readonly IWorkoutService _workoutService;
         private readonly IWorkoutRepCounterService _counterService;
 
-        public WorkoutsController(WorkoutPlannerMVCContext context,  IWorkoutRepCounterService counterService, IWorkoutService workouts, ILogger<WorkoutsController> logger)
+        public WorkoutsController(WorkoutPlannerMVCContext context, IWorkoutRepCounterService counterService, IWorkoutService workouts, ILogger<WorkoutsController> logger)
         {
-            //  _context = context;
             _counterService = counterService;
             _workoutService = workouts;
             _logger = logger;
         }
 
+
         // GET: Workouts
         public async Task<IActionResult> Index()
         {
-            //return View(await _context.Workouts.Include(w => w.Exercises).ToListAsync());
             return View(await _workoutService.GetAllAsync());
         }
 
         public IActionResult IncrementReps()
         {
-          _counterService.IncrementCount();
+            _counterService.IncrementCount();
             return RedirectToAction(nameof(Reps));
         }
 
 
-        public async Task<IActionResult> Reps() {
-            
+        public IActionResult Reps()
+        {
+
             var reps = _counterService.GetCount();
-            
+
             return View(reps);
-        
         }
 
-        //These are commented out to remain within the scope of this week.
-        //Crud will be created next week and moved into the service folder.
+
 
         // GET: Workouts/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             var workout = await _workoutService.GetByIdAsync(id);
-              
+
 
             return View(workout);
         }
 
         // GET: Workouts/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var vm = await _workoutService.GetWorkoutVmAsync(null);
+
+            return View(vm);
         }
 
         // POST: Workouts/Create
@@ -71,38 +71,27 @@ namespace WorkoutPlannerMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate")] Workout workout)
+        public async Task<IActionResult> Create(WorkoutVm vm)
         {
 
             if (!ModelState.IsValid)
             {
-                // Loop through errors
-                foreach (var state in ModelState)
-                {
-                    string key = state.Key;
-                    var errors = state.Value.Errors;
-
-                    foreach (var error in errors)
-                    {
-                        Console.WriteLine($"Error in '{key}': {error.ErrorMessage}");
-                    }
-                }
+                vm.AvailableExercises = await _workoutService.GetAvailableExercisesAsync();
+                return View(vm);
             }
 
-            if (ModelState.IsValid)
-            {
-               await  _workoutService.AddAsync(workout);
-                return RedirectToAction(nameof(Index));
-            }
-            return View(workout);
+
+            await _workoutService.CreateWorkoutAsync(vm);
+            return RedirectToAction(nameof(Index));
+
         }
 
         // GET: Workouts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var workout = await _workoutService.GetByIdAsync(id);
-           
-            return View(workout);
+            var vm = await _workoutService.GetWorkoutVmAsync(id);
+
+            return View(vm);
         }
 
         // POST: Workouts/Edit/5
@@ -110,42 +99,32 @@ namespace WorkoutPlannerMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,StartDate")] Workout workout)
+        public async Task<IActionResult> Edit(int id, WorkoutVm vm)
         {
 
-            if (id != workout.Id)
+            if (id != vm.Id)
             {
                 return NotFound();
             }
 
             if (!ModelState.IsValid)
             {
-                // Loop through errors
-                foreach (var state in ModelState)
-                {
-                    string key = state.Key;
-                    var errors = state.Value.Errors;
-
-                    foreach (var error in errors)
-                    {
-                        Console.WriteLine($"Error in '{key}': {error.ErrorMessage}");
-                    }
-                }
+                Console.WriteLine("ModelState Invalid");
+                return View(vm);
             }
 
-            if (ModelState.IsValid)
+
+            try
             {
-                try
-                {
-                    await _workoutService.UpdateAsync(workout);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    _logger.LogError("ConcurrencyExpetion");
-                }
-                return RedirectToAction(nameof(Index));
+                await _workoutService.UpdateWorkoutAsync(vm);
             }
-            return View(workout);
+
+            catch (DbUpdateConcurrencyException)
+            {
+                _logger.LogError("ConcurrencyExpetion");
+            }
+            return RedirectToAction(nameof(Index));
+
         }
 
         // GET: Workouts/Delete/5
@@ -164,10 +143,5 @@ namespace WorkoutPlannerMVC.Controllers
             await _workoutService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
-
-        //private bool WorkoutExists(int id)
-        //{
-        //    return _context.Workouts.Any(e => e.Id == id);
-        //}
     }
 }

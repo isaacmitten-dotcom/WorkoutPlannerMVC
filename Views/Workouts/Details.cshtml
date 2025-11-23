@@ -28,6 +28,22 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.StartDate)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Exercises)
+        </dt>
+        <dd class="col-sm-10">
+                @if (Model.Exercises != null && Model.Exercises.Any())
+                {
+
+                    <ul>
+                        @foreach (var ex in Model.Exercises)
+                        {
+                            <li>@ex.Name (@ex.Sets x @ex.Reps) at @ex.Weight lbs</li>
+                        }
+                    </ul>
+                }
+        </dd>
+        
     </dl>
 </div>
 <div>

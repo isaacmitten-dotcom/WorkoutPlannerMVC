@@ -16,6 +16,8 @@ builder.Services.AddDbContext<WorkoutPlannerMVCContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IWorkoutRepCounterService, WorkoutRepCounterService>();
 builder.Services.AddScoped<IWorkoutService, WorkoutService>();
+builder.Services.AddScoped<IExerciseService, ExerciseService>();
+
 
 var app = builder.Build();
 

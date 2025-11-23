@@ -16,7 +16,6 @@ namespace WorkoutPlannerMVC.Services
 
         Task UpdateAsync(Exercise exercise);
 
-
     }
 
 
@@ -42,8 +41,10 @@ namespace WorkoutPlannerMVC.Services
         public async Task<IEnumerable<Exercise>> GetAllAsync() => await _context.Exercises.ToListAsync();
 
 
-        public async Task<Exercise> GetByIdAsync(int? id) => await _context.Exercises.FirstOrDefaultAsync(e => e.Id == id);
-
+        public async Task<Exercise> GetByIdAsync(int? id)
+        {
+            return await _context.Exercises.FirstOrDefaultAsync(e => e.Id == id);
+        }
 
         public async Task UpdateAsync(Exercise exercise)
         {

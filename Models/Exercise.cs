@@ -1,4 +1,6 @@
-﻿namespace WorkoutPlannerMVC.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WorkoutPlannerMVC.Models
 {
     public class Exercise
     {
@@ -6,14 +8,19 @@
 
         public int Id { get; set; }
 
+        [Required]
         public string? Name { get; set; }
-
+        
+        [Required]
         public string? Description { get; set; }
 
+        [Required]
         public int Sets { get; set; }
 
+        [Required]
         public int Reps { get; set; }
 
+        [Required]
         public int Weight { get; set; }
 
 
