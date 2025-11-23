@@ -1,7 +1,17 @@
-## Week 11: Separation of Concerns / DI
+## Week 12: CRUD
 
-In my WorkoutPlannerMVC project, I implemented dependency injection to manage the logic behind counting and incrementing workout repetitions in a clean, modular way. I started by creating an interface named IWorkoutRepCounterService and a concrete class called WorkoutRepCounterService inside the Services folder. This service contains all the logic for tracking, updating, and retrieving rep counts, which helps me keep the controller focused only on handling requests and responses. Separating this functionality into a dedicated service makes the code easier to understand, maintain, and test.
-To make the service accessible across the project, I registered it with the built-in dependency injection container in Program.cs using the line services.AddSingleton<IWorkoutRepCounterService, WorkoutRepCounterService>(). This tells ASP.NET Core to automatically provide an instance of my service whenever a controller or another class requests the IWorkoutRepCounterService interface.
-In my controller, I used constructor injection to receive the service and assigned it to a private readonly field named _counterService. I then used this instance in my action methods. For example, IncrementReps() calls _counterService.IncrementCount() to increase the number of reps. I then redirect to the Reps() function using RedirectToAction(nameof(Reps)). Reps() retrieves the current value using _counterService.GetCount() and passes it to the view.
+This week's assignment was to create the CRUD functions for our program. This week I discovered that I had set up my database incorrectly and I had chosen the wrong kind of relationship for my entities. I previously had configured a one-to-many relationship with one workout having many exercises. However, I realized this wouldn’t support the functionality I needed, since each workout can have multiple exercises and each exercise can belong to multiple workouts. So I added a navigation property to each of my entities and updated my database context to properly handle the many-to-many relationship. After I finished that, I created asynchronous CRUD functions for both the workout and exercise entities. I struggled a little making the views, as I wasn’t sure how to best structure it to allow for multiple exercises to be assigned to a workout. I ended up going with a checkbox that would read from a SelectListItem named SelectedExerciseIds, and I think it turned out nicely. Lastly, I added validation to my models using the [Required] attribute. This allowed ASP.NET Core’s built-in validation system to provide immediate feedback to users when submitting forms, improving the overall usability of the application.
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/53c262d4-e807-44fe-9006-bad4f8cbdc1e" />
+These are some screenshots of the validation feedback, and different pages.
+
+# Validation
+<img width="1682" height="824" alt="validation" src="https://github.com/user-attachments/assets/d94ad3dd-5524-43f1-bf89-1643aa3c7f20" />
+
+# Create
+<img width="1820" height="891" alt="CreatePage" src="https://github.com/user-attachments/assets/63bc723e-5d99-4d02-b259-d70cb769cc78" />
+
+# Details
+<img width="1687" height="817" alt="DetailsPage" src="https://github.com/user-attachments/assets/5dad3b9d-9aa0-4b09-86fd-f4f0ef676a83" />
+
+# Delete
+<img width="1030" height="590" alt="DeletePage" src="https://github.com/user-attachments/assets/a762f6fb-f23f-4c52-a5db-6053dea3b6b7" />
