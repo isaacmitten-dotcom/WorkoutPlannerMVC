@@ -3,12 +3,17 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using WorkoutPlannerMVC.Data;
 using WorkoutPlannerMVC.Services;
+using WorkoutPlannerMVC.HealthChecks;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddDbContext<WorkoutPlannerMVCContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("WorkoutPlannerMVCContext") ?? throw new InvalidOperationException("Connection string 'WorkoutPlannerMVCContext' not found.")));
 
+builder.Services.AddHealthChecks()
+    .AddCheck<DbCheck>("DbCheck");
 
 
 
@@ -20,6 +25,13 @@ builder.Services.AddScoped<IExerciseService, ExerciseService>();
 
 
 var app = builder.Build();
+
+app.MapHealthChecks("/healthz", new HealthCheckOptions
+{
+    ResponseWriter = DbCheck.WriteResponse
+});
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -49,7 +61,7 @@ using (var scope = app.Services.CreateScope())
 
 
     // Seed data
-    SeedData.Initialize(context);
+    //SeedData.Initialize(context);
 }
 
 
