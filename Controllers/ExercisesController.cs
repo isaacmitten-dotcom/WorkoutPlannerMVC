@@ -83,7 +83,6 @@ namespace WorkoutPlannerMVC.Controllers
             {
                 Action = "ExerciseCreate",
                 Success = false,
-                ExerciseId = exercise.Id,
                 ExerciseName = exercise.Name,
                 ResponseId = HttpContext.TraceIdentifier
             });
