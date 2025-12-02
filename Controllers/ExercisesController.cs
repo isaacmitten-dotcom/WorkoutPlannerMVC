@@ -14,12 +14,14 @@ namespace WorkoutPlannerMVC.Controllers
     public class ExercisesController : Controller
     {
         private readonly IExerciseService _exService;
+        private readonly ILogger<ExercisesController> _logger;
 
 
-        public ExercisesController(IExerciseService exService)
+
+        public ExercisesController(IExerciseService exService, ILogger<ExercisesController> logger)
         {
             _exService = exService;
-
+            _logger = logger;
         }
 
         // GET: Exercises
@@ -57,11 +59,34 @@ namespace WorkoutPlannerMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,Sets,Reps,Weight")] Exercise exercise)
         {
+
+
+            //Force an invalid model state to test the logging
+            //ModelState.AddModelError("Test", "For testing");
+
             if (ModelState.IsValid)
             {
                 await _exService.AddAsync(exercise);
+
+                _logger.LogInformation("Exercise created {@logObject}", new { 
+                    Action = "ExerciseCreate",
+                    Success = true,
+                    ExerciseId = exercise.Id,
+                    ExerciseName = exercise.Name,
+                    ResponseId  = HttpContext.TraceIdentifier
+                });
+
                 return RedirectToAction("Index");
             }
+
+            _logger.LogError("Exercise could not be created {@logObject}", new
+            {
+                Action = "ExerciseCreate",
+                Success = false,
+                ExerciseId = exercise.Id,
+                ExerciseName = exercise.Name,
+                ResponseId = HttpContext.TraceIdentifier
+            });
             return View(exercise);
         }
 
@@ -98,6 +123,15 @@ namespace WorkoutPlannerMVC.Controllers
                 try
                 {
                    await _exService.UpdateAsync(exercise);
+
+                    _logger.LogInformation("Exercise was updated {@logObject}", new
+                    {
+                        Action = "ExerciseEdit",
+                        Success = true,
+                        ExerciseId = exercise.Id,
+                        ExerciseName = exercise.Name,
+                        ResponseId = HttpContext.TraceIdentifier
+                    });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -105,6 +139,16 @@ namespace WorkoutPlannerMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            _logger.LogError("Exercise could not be updated {@logObject}", new
+            {
+                Action = "ExerciseEdit",
+                Success = false,
+                ExerciseId = exercise.Id,
+                ExerciseName = exercise.Name,
+                ResponseId = HttpContext.TraceIdentifier
+            });
+
             return View(exercise);
         }
 
@@ -130,8 +174,32 @@ namespace WorkoutPlannerMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _exService.DeleteAsync(id);
+
+            try
+            {
+                await _exService.DeleteAsync(id);
+
+                _logger.LogInformation("Exercise was deleted {@logObject}", new
+                {
+                    Action = "ExerciseDelete",
+                    Success = true,
+                    ExerciseId = id,
+                    ResponseId = HttpContext.TraceIdentifier
+                });
+            }
+
+            catch
+            {
+                _logger.LogError("Exercise could not be deleted {@logObject}", new
+                {
+                    Action = "ExerciseDelete",
+                    Success = false,
+                    ExerciseId = id,
+                    ResponseId = HttpContext.TraceIdentifier
+                });
+            }
             return RedirectToAction(nameof(Index));
+
         }
     }
 }

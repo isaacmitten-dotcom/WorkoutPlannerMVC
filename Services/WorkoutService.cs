@@ -131,6 +131,13 @@ namespace WorkoutPlannerMVC.Services
         }
         public async Task DeleteAsync(int? id)
         {
+
+            //For Testing
+            if (id == -1)
+            {
+                throw new Exception("Forced delete failure for testing");
+            }
+
             var entity = await _context.Workouts.FindAsync(id);
             if (entity is null) return;
             _context.Workouts.Remove(entity);   

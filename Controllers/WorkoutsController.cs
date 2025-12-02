@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using WorkoutPlannerMVC.Data;
 using WorkoutPlannerMVC.Models;
 using WorkoutPlannerMVC.Models.ViewModels;
@@ -18,10 +19,10 @@ namespace WorkoutPlannerMVC.Controllers
         private readonly IWorkoutService _workoutService;
         private readonly IWorkoutRepCounterService _counterService;
 
-        public WorkoutsController(WorkoutPlannerMVCContext context, IWorkoutRepCounterService counterService, IWorkoutService workouts, ILogger<WorkoutsController> logger)
+        public WorkoutsController(WorkoutPlannerMVCContext context, IWorkoutRepCounterService counterService, IWorkoutService workoutService, ILogger<WorkoutsController> logger)
         {
             _counterService = counterService;
-            _workoutService = workouts;
+            _workoutService = workoutService;
             _logger = logger;
         }
 
@@ -73,15 +74,35 @@ namespace WorkoutPlannerMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(WorkoutVm vm)
         {
+            //Force an invalid model state to test the logging
+            //ModelState.AddModelError("Test", "For testing");
+
 
             if (!ModelState.IsValid)
             {
                 vm.AvailableExercises = await _workoutService.GetAvailableExercisesAsync();
+                
+                _logger.LogError("Workout creation failed {@logObject}", new
+                {
+                    Action = "WorkoutCreate",
+                    WorkoutName = vm.Name,
+                    Success = false,
+                    ResponseId = HttpContext.TraceIdentifier
+                });
                 return View(vm);
             }
 
+            var workout = await _workoutService.CreateWorkoutAsync(vm);
 
-            await _workoutService.CreateWorkoutAsync(vm);
+            _logger.LogInformation("Workout created {@logObject}", new
+            {
+                Action = "WorkoutCreate",
+                Success = true,
+                WorkoutId = workout.Id,
+                WorkoutName = workout.Name,
+                ResponseId = HttpContext.TraceIdentifier
+            });
+
             return RedirectToAction(nameof(Index));
 
         }
@@ -109,7 +130,14 @@ namespace WorkoutPlannerMVC.Controllers
 
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("ModelState Invalid");
+                _logger.LogError("Workout update failed {@logObject}", new
+                {
+                    Action = "WorkoutEdit",
+                    Success = false,
+                    WorkoutId = vm.Id,
+                    WorkoutName = vm.Name,
+                    ResponseId = HttpContext.TraceIdentifier
+                });
                 return View(vm);
             }
 
@@ -117,11 +145,26 @@ namespace WorkoutPlannerMVC.Controllers
             try
             {
                 await _workoutService.UpdateWorkoutAsync(vm);
+                _logger.LogInformation("Workout updated {@logObject}", new
+                {
+                    Action = "WorkoutEdit",
+                    Success = true,
+                    WorkoutId = vm.Id,
+                    WorkoutName = vm.Name,
+                    ResponseId = HttpContext.TraceIdentifier
+                });
             }
 
             catch (DbUpdateConcurrencyException)
             {
-                _logger.LogError("ConcurrencyExpetion");
+                _logger.LogError("Workout concurrency error {@logObject}", new
+                {
+                    Action = "WorkoutEdit",
+                    Success = false,
+                    WorkoutId = vm.Id,
+                    WorkoutName = vm.Name,
+                    ResponseId = HttpContext.TraceIdentifier
+                });
             }
             return RedirectToAction(nameof(Index));
 
@@ -140,7 +183,30 @@ namespace WorkoutPlannerMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _workoutService.DeleteAsync(id);
+            try
+            {
+                await _workoutService.DeleteAsync(id);
+
+                _logger.LogInformation("Workout deleted {@logObject}", new
+                {
+                    Action = "WorkoutDelete",
+                    Success = true,
+                    WorkoutId = id,
+                    ResponseId = HttpContext.TraceIdentifier
+                });
+            }
+
+            catch
+            {
+                _logger.LogError("Workout delete failed {@logObject}", new
+                {
+                    Action = "WorkoutDelete",
+                    Success = false,
+                    WorkoutId = id,
+                    ResponseId = HttpContext.TraceIdentifier
+                });
+            }
+
             return RedirectToAction(nameof(Index));
         }
     }
