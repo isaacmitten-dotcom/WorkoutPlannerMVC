@@ -1,7 +1,14 @@
-## Week 11: Separation of Concerns / DI
+# Week14: Logging
 
-In my WorkoutPlannerMVC project, I implemented dependency injection to manage the logic behind counting and incrementing workout repetitions in a clean, modular way. I started by creating an interface named IWorkoutRepCounterService and a concrete class called WorkoutRepCounterService inside the Services folder. This service contains all the logic for tracking, updating, and retrieving rep counts, which helps me keep the controller focused only on handling requests and responses. Separating this functionality into a dedicated service makes the code easier to understand, maintain, and test.
-To make the service accessible across the project, I registered it with the built-in dependency injection container in Program.cs using the line services.AddSingleton<IWorkoutRepCounterService, WorkoutRepCounterService>(). This tells ASP.NET Core to automatically provide an instance of my service whenever a controller or another class requests the IWorkoutRepCounterService interface.
-In my controller, I used constructor injection to receive the service and assigned it to a private readonly field named _counterService. I then used this instance in my action methods. For example, IncrementReps() calls _counterService.IncrementCount() to increase the number of reps. I then redirect to the Reps() function using RedirectToAction(nameof(Reps)). Reps() retrieves the current value using _counterService.GetCount() and passes it to the view.
+This week’s project was Logging. The requirements were to log at least one success path and one error path, include useful fields such as request/correlation ID, entity ID, and action, and make logs readable and actionable. I was able to do this by implementing structured logging in both the ExercisesController and WorkoutsController of the WorkoutPlannerMVC application. For each key action, Create, Edit, and Delete, I added logs for both successful operations and failed operations. The logs include useful fields like Action (Create, Edit, Delete), Success status (True, False), entity identifiers such as ExerciseId or WorkoutId, entity names, and a ResponseId which serves as a correlation ID.  For example, when creating an exercise, a successful creation generates a log with the exercise ID, name, action, success status, and response ID, while a failed creation logs the same fields with a success value of false. A success looks something like this:
+ Exercise created { Action = ExerciseCreate, Success = True, ExerciseId = 10, ExerciseName = Spoon, ResponseId = 0HNHHQN23LN1I:0000003D }
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/53c262d4-e807-44fe-9006-bad4f8cbdc1e" />
+I did this by passing anonymous objects into the log message template with the relevant fields. This allows anyone reviewing the logs to quickly and efficiently understand what happened, which entity was affected, and whether the operation was a success or a failure. 
+
+Here are some screenshots of a success and fail log:
+
+## Success
+<img width="1267" height="850" alt="StructureLogSuccess" src="https://github.com/user-attachments/assets/e133da05-6dbc-40f0-8ef3-dbb30033c585" />
+
+## Fail
+<img width="1269" height="684" alt="StructureLogFail" src="https://github.com/user-attachments/assets/ba79b40b-ce7b-49b4-afa4-62ad901a5c27" />
