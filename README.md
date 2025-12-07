@@ -1,14 +1,24 @@
-# Week14: Logging
+# Week15: Stored Procedure
 
-This week’s project was Logging. The requirements were to log at least one success path and one error path, include useful fields such as request/correlation ID, entity ID, and action, and make logs readable and actionable. I was able to do this by implementing structured logging in both the ExercisesController and WorkoutsController of the WorkoutPlannerMVC application. For each key action, Create, Edit, and Delete, I added logs for both successful operations and failed operations. The logs include useful fields like Action (Create, Edit, Delete), Success status (True, False), entity identifiers such as ExerciseId or WorkoutId, entity names, and a ResponseId which serves as a correlation ID.  For example, when creating an exercise, a successful creation generates a log with the exercise ID, name, action, success status, and response ID, while a failed creation logs the same fields with a success value of false. A success looks something like this:
- Exercise created { Action = ExerciseCreate, Success = True, ExerciseId = 10, ExerciseName = Spoon, ResponseId = 0HNHHQN23LN1I:0000003D }
+This week's assignment was to implement the stored procedures feature. Call one procedure from your app and render the result. The requirements were to execute a stored procedure via EF Core (raw SQL or mapped), handle parameters safely and render the result in a view or API response, and commit the SQL script used to create the procedure. For my project I created a stored procedure called GetTopExercise. This is the code for it:
 
-I did this by passing anonymous objects into the log message template with the relevant fields. This allows anyone reviewing the logs to quickly and efficiently understand what happened, which entity was affected, and whether the operation was a success or a failure. 
+```
+CREATE PROCEDURE GetTopExercise
+AS
+BEGIN
+    SELECT TOP 1 
+        ew.ExercisesId, 
+        e.Name AS ExerciseName, 
+        COUNT(*) AS Frequency
+    FROM ExerciseWorkout ew
+    INNER JOIN Exercises e ON ew.ExercisesId = e.Id
+    GROUP BY ew.ExercisesId, e.Name
+    ORDER BY Frequency DESC;
+END
+```
 
-Here are some screenshots of a success and fail log:
+This SQL statement looks at the join table called ExerciseWorkout. It joins with the Exercise table to retrieve the name of the exercise. It looks through the ExerciseId column from ExerciseWorkout and sorts them in descending order with the most frequent ExerciseId on top. It then only returns the top item from the query, which is the most frequent ExerciseId. I created a model to hold the result of this procedure called TopExercise. It has the ExercisesId, ExerciseName, and frequency properties. I then created a function in ExerciseService to execute the procedure, and I call that in the controller. I pass the data into the TopExercise view, which displays it. 
 
-## Success
-<img width="1267" height="850" alt="StructureLogSuccess" src="https://github.com/user-attachments/assets/e133da05-6dbc-40f0-8ef3-dbb30033c585" />
+Here is a screenshot of that:
 
-## Fail
-<img width="1269" height="684" alt="StructureLogFail" src="https://github.com/user-attachments/assets/ba79b40b-ce7b-49b4-afa4-62ad901a5c27" />
+<img width="1532" height="816" alt="image" src="https://github.com/user-attachments/assets/389bb379-be32-47de-bf2a-f2c060570fe4" />
