@@ -20,6 +20,11 @@ namespace WorkoutPlannerMVC.Data
 
         public DbSet<WorkoutPlannerMVC.Models.Exercise> Exercises { get; set; } = default!;
 
+        public DbSet<TopExercise> TopExercises { get; set; }
+
+        public TopExercise GetTopExercise() { 
+            return Set<TopExercise>().FromSqlRaw("EXEC GetTopExercise").AsEnumerable().FirstOrDefault();  
+        }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -27,6 +32,9 @@ namespace WorkoutPlannerMVC.Data
             modelBuilder.Entity<Workout>()
                 .HasMany(w => w.Exercises)
                 .WithMany(e => e.Workouts);
+
+            modelBuilder.Entity<TopExercise>()
+                .HasNoKey();
         }
     } 
 }

@@ -1,0 +1,16 @@
+﻿@model WorkoutPlannerMVC.Models.TopExercise
+
+@{
+    ViewData["Title"] = "TopExercise";
+}
+
+<h1>Top Exercise</h1>
+@if (Model != null)
+{
+    <p><strong>Exercise Name:</strong> @Model.ExerciseName</p>
+    <p><strong>Frequency:</strong> @Model.Frequency</p>
+}
+else
+{
+    <p>No top exercise found.</p>
+}

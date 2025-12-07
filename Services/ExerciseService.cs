@@ -16,6 +16,8 @@ namespace WorkoutPlannerMVC.Services
 
         Task UpdateAsync(Exercise exercise);
 
+        TopExercise GetTopExercise();
+
     }
 
 
@@ -50,6 +52,11 @@ namespace WorkoutPlannerMVC.Services
         {
             _context.Exercises.Update(exercise);
             await _context.SaveChangesAsync();
+        }
+
+        public TopExercise GetTopExercise()
+        {
+            return _context.GetTopExercise();
         }
     }
 }

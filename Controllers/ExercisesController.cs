@@ -32,6 +32,12 @@ namespace WorkoutPlannerMVC.Controllers
             return View(exercises);
         }
 
+        public async Task<IActionResult> TopExercise()
+        {
+            var topExercise = _exService.GetTopExercise();
+
+            return View(topExercise);
+        }
 
 
         // GET: Exercises/Details/5
