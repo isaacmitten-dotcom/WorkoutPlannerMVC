@@ -12,8 +12,8 @@ using WorkoutPlannerMVC.Data;
 namespace WorkoutPlannerMVC.Migrations
 {
     [DbContext(typeof(WorkoutPlannerMVCContext))]
-    [Migration("20251207201313_StoredProcedure")]
-    partial class StoredProcedure
+    [Migration("20251207213445_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,6 +68,21 @@ namespace WorkoutPlannerMVC.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Exercises");
+                });
+
+            modelBuilder.Entity("WorkoutPlannerMVC.Models.TopExercise", b =>
+                {
+                    b.Property<string>("ExerciseName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ExercisesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("int");
+
+                    b.ToTable("TopExercises");
                 });
 
             modelBuilder.Entity("WorkoutPlannerMVC.Models.Workout", b =>

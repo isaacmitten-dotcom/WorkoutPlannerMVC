@@ -15,24 +15,20 @@ namespace WorkoutPlannerMVC.Migrations
             AS
             BEGIN
                 SELECT TOP 1 
-                    ew.ExerciseId, 
+                    ew.ExercisesId, 
                     e.Name AS ExerciseName, 
                     COUNT(*) AS Frequency
                 FROM ExerciseWorkout ew
-                INNER JOIN Exercise e ON ew.ExerciseId = e.Id
-                GROUP BY ew.ExerciseId, e.Name
+                INNER JOIN Exercises e ON ew.ExercisesId = e.Id
+                GROUP BY ew.ExercisesId, e.Name
                 ORDER BY Frequency DESC;
             END
             ");
-
-
-
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS GetTopExercise");
 
         }
     }

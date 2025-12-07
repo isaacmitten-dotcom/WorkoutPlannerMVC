@@ -67,6 +67,21 @@ namespace WorkoutPlannerMVC.Migrations
                     b.ToTable("Exercises");
                 });
 
+            modelBuilder.Entity("WorkoutPlannerMVC.Models.TopExercise", b =>
+                {
+                    b.Property<string>("ExerciseName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ExercisesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("int");
+
+                    b.ToTable("TopExercises");
+                });
+
             modelBuilder.Entity("WorkoutPlannerMVC.Models.Workout", b =>
                 {
                     b.Property<int>("Id")
