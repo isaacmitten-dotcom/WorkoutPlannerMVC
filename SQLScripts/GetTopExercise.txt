@@ -1,0 +1,12 @@
+CREATE PROCEDURE GetTopExercise
+            AS
+            BEGIN
+                SELECT TOP 1 
+                    ew.ExercisesId, 
+                    e.Name AS ExerciseName, 
+                    COUNT(*) AS Frequency
+                FROM ExerciseWorkout ew
+                INNER JOIN Exercises e ON ew.ExercisesId = e.Id
+                GROUP BY ew.ExercisesId, e.Name
+                ORDER BY Frequency DESC;
+            END
